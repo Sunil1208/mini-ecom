@@ -1,29 +1,32 @@
-module.exports = (sequelize, Sequelize) => {
-    const Product = sequelize.define("products", {
-        product_id: { //TODO: this has been updated, check in the code and update wherever required
-            type: Sequelize.UUID,
-            defaultValue: Sequelize.UUIDV4,
-            primaryKey: true,
-        },
-        name: {
-            type: Sequelize.STRING,
-        },
-        price: {
-            type: Sequelize.FLOAT,
-        },
-        inStock: {
-            type: Sequelize.INTEGER,
-        },
-        description: {
-            type: Sequelize.STRING,
-        },
-        image: {
-            type: Sequelize.STRING,
-        },
-        isActive: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: true
-        }
-    });
-    return Product;
-}
+const { DataTypes } = require('sequelize');
+const sequelize = require('../database');
+
+const products = sequelize.define('products', {
+  product_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  name: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+  price: {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  in_stock: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  description: {
+    type: DataTypes.STRING(2056),
+    defaultValue: '',
+  },
+  image: {
+    type: DataTypes.STRING(1024),
+    defaultValue: '',
+  },
+});
+
+module.exports = products;

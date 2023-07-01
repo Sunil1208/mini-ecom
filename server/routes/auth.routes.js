@@ -1,14 +1,14 @@
-const express = require("express");
 const { verifySignUp } = require("../middleware");
 const { signin, signup } = require("../controllers/auth.controller");
-const router = express.Router();
 
-router.post(
-    "/signup",
-    [verifySignUp.checkDuplicateUsernameOrEmail, verifySignUp.checkRolesExisted],
-    signup
-);
+const BASE_PATH = "/auth";
 
-router.post("/signin", signin);
+module.exports = ( router ) => {
+    router.post(
+        `${BASE_PATH}/signup`,
+        [verifySignUp.checkDuplicateUsernameOrEmail, verifySignUp.checkRolesExisted],
+        signup
+    );
 
-module.exports = router;
+    router.post(`${BASE_PATH}/signin`, signin);
+};

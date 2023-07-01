@@ -1,13 +1,8 @@
-const db = require("../models");
-
-const Products = db.products;
+const { Op } = require("sequelize");
+const Products = require("../models/product.model");
 
 exports.getProducts = (req, res) => {
-    Products.findAll({
-        where: {
-            isActive: true
-        }
-    }).then(products => {
+    Products.findAll().then(products => {
         return res.status(200).send({
             message: "",
             data: products,
@@ -26,9 +21,8 @@ exports.getProducts = (req, res) => {
 exports.getProductsInStock = (req, res) => {
     Products.findAll({
         where: {
-            isActive: true,
             inStock: {
-                [db.Sequelize.Op.gt]: 0
+                [Op.gt]: 0
             }
         }
     }).then(products => {
@@ -70,7 +64,7 @@ exports.getProductById = (req, res) => {
 };
 
 exports.addProduct = (req, res) => {
-    const requiredFields = ["name", "description", "image", "price", "inStock"];
+    const requiredFields = ["name", "description", "image", "price", "in_stock"];
     console.log("req body ", req.body)
     for (let i = 0; i < requiredFields.length; i++) {
         if(!req.body[requiredFields[i]]){
@@ -81,11 +75,11 @@ exports.addProduct = (req, res) => {
         }
     }
     // Save Product to database
-    const { name, price, inStock, description, image } = req.body;
+    const { name, price, in_stock, description, image } = req.body;
     Products.create({
         name: name,
         price: price,
-        inStock: inStock,
+        in_stock: in_stock,
         description: description,
         image: image
     }).then(product => {

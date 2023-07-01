@@ -1,44 +1,33 @@
-const db = require("../models");
-const config = require("../config/auth.config");
-const User = db.user;
-const Role = db.role;
-
-const {Op} = db.Sequelize;
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+const config = require("../config/auth.config");
+
+const users = require("../models/user.model");
+const { ROLES } = require("../constants/constant");
 
 exports.signup = (req, res) => {
+    const { roles } = req.body;
+    if(roles.length > ROLES.length){
+        return res.status(400).send({
+            message: `Max of ${ROLES.length} is allowed`,
+            status: 0,
+        })
+    }
     // Save user to database
-    User.create({
+    users.create({
         username: req.body.username,
         email: req.body.email,
+        full_name: req.body.full_name,
+        phone: req.body.phone,
+        roles: roles,
         password: bcrypt.hashSync(req.body.password, 8)
     })
     .then(user => {
-        if(req.body.roles) {
-            Role.findAll({
-                where: {
-                    name: {
-                        [Op.or]: req.body.roles
-                    }
-                }
-            }).then(roles => {
-                user.setRoles(roles).then(() => {
-                    res.send({
-                        message: "User was registered successfully!"
-                    });
-                });
-            })
-        } else {
-            // user role = 1
-            user.setRoles([1]).then(() => {
-                res.send({
-                    message: "User was registered successfully!"
-                });
-            });
-        }
+        res.send({
+            message: "User was registered successfully!",
+            status: 1,
+        });
     })
     .catch((err) => {
         res.status(500).send({ message: err.message });
@@ -46,7 +35,7 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
-    User.findOne({
+    users.findOne({
         where: {
             username: req.body.username
         }
@@ -80,17 +69,18 @@ exports.signin = (req, res) => {
         );
 
         let authorities = [];
-        user.getRoles().then(roles => {
-            for(let i = 0; i < roles.length; i++) {
-                authorities.push("ROLE_" + roles[i].name.toUpperCase());
-            }
-            res.status(200).send({
-                user_id: user.user_id,
-                username: user.username,
-                email: user.email,
-                roles: authorities,
-                accessToken: token
-            });
+        const { roles } = user;
+        for(let i = 0; i < roles.length; i++) {
+            authorities.push("ROLE_" + roles[i].toUpperCase());
+        }
+        res.status(200).send({
+            user_id: user.user_id,
+            username: user.username,
+            email: user.email,
+            roles: authorities,
+            phone: user.phone,
+            full_name: user.full_name,
+            accessToken: token
         });
     })
     .catch(err => {

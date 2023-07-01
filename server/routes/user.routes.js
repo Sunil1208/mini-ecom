@@ -1,6 +1,3 @@
-const express = require("express");
-const router = express.Router();
-
 const { authJwt: { 
   verifyToken, 
   isAdmin, 
@@ -16,24 +13,26 @@ const {
   moderatorBoard 
 } = require("../controllers/user.controller");
 
-router.get("/all", allAccess);
+const BASE_PATH = "/user";
 
-router.get(
-  "/user",
-  [verifyToken],
-  userBoard
-);
+module.exports = ( router ) => {
+  router.get(`${BASE_PATH}/all`, allAccess);
 
-router.get(
-  "/mod",
-  [verifyToken, isModerator],
-  moderatorBoard
-);
-
-router.get(
-  "/admin",
-  [verifyToken, isAdmin],
-  adminBoard
-);
-
-module.exports = router;
+  router.get(
+    `${BASE_PATH}/board`,
+    [verifyToken],
+    userBoard
+  );
+  
+  router.get(
+    `${BASE_PATH}/mod`,
+    [verifyToken, isModerator],
+    moderatorBoard
+  );
+  
+  router.get(
+    `${BASE_PATH}/admin`,
+    [verifyToken, isAdmin],
+    adminBoard
+  );
+};
