@@ -10,7 +10,10 @@ const {
   userBoard, 
   adminBoard, 
   allAccess, 
-  moderatorBoard 
+  moderatorBoard,
+  getUserInfo,
+  updateUser,
+  updateUserRole
 } = require("../controllers/user.controller");
 
 const BASE_PATH = "/user";
@@ -19,7 +22,7 @@ module.exports = ( router ) => {
   router.get(`${BASE_PATH}/all`, allAccess);
 
   router.get(
-    `${BASE_PATH}/board`,
+    `${BASE_PATH}/info`,
     [verifyToken],
     userBoard
   );
@@ -34,5 +37,23 @@ module.exports = ( router ) => {
     `${BASE_PATH}/admin`,
     [verifyToken, isAdmin],
     adminBoard
+  );
+
+  router.get(
+    `${BASE_PATH}/:user_id/info`,
+    [verifyToken],
+    getUserInfo
+  );
+
+  router.post(
+    `${BASE_PATH}/:user_id/update`,
+    [verifyToken],
+    updateUser
+  );
+
+  router.post(
+    `${BASE_PATH}/:user_id/update-role`,
+    [verifyToken, isAdmin],
+    updateUserRole
   );
 };
