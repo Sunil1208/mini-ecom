@@ -45,13 +45,13 @@ module.exports = ( router ) => {
     getUserInfo
   );
 
-  router.post(
+  router.put(
     `${BASE_PATH}/:user_id/update`,
     [verifyToken],
     updateUser
   );
 
-  router.post(
+  router.put(
     `${BASE_PATH}/:user_id/update-role`,
     [verifyToken, isAdmin],
     updateUserRole
