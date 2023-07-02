@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config");
-const User = require("../models/user.model");
+const users = require("../models/user.model");
 
 verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
@@ -25,10 +25,10 @@ verifyToken = (req, res, next) => {
 };
 
 isAdmin = (req, res, next) => {
-    User.findByPk(req.userId).then(user => {
+    users.findByPk(req.userId).then(user => {
         const { roles } = user;
         for (let i = 0; i < roles.length; i++) {
-            if (roles[i].name === "admin"){
+            if (roles[i] === "admin"){
                 next();
                 return;
             }
@@ -42,10 +42,10 @@ isAdmin = (req, res, next) => {
 };
 
 isModerator = (req, res, next) => {
-    User.findByPk(req.userId).then(user => {
+    users.findByPk(req.userId).then(user => {
         const { roles } = user;
         for (let i = 0; i < roles.length; i++) {
-            if (roles[i].name === "moderator"){
+            if (roles[i] === "moderator"){
                 next();
                 return;
             }
@@ -59,15 +59,15 @@ isModerator = (req, res, next) => {
 };
 
 isModeratorOrAdmin = (req, res, next) => {
-    User.findByPk(req.userId).then(user => {
+    users.findByPk(req.userId).then(user => {
         const { roles } = user;
         for (let i = 0; i< roles.length; i++) {
-            if (roles[i].name === "moderator") {
+            if (roles[i] === "moderator") {
                 next();
                 return;
             }
 
-            if (roles[i].name === "admin") {
+            if (roles[i] === "admin") {
                 next();
                 return;
             }
