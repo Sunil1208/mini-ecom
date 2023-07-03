@@ -16,7 +16,7 @@
     "core-js": "^3.8.3",
     "jquery": "^3.7.0",
     "popper.js": "^1.16.1",
-    "vee-validate": "^2.2.15",
+    "vee-validate": "^4.10.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"

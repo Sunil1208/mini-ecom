@@ -1,4 +1,4 @@
-import Vue from "vue";
+// import * as Vue from "vue";
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
@@ -6,9 +6,9 @@ import store from "./store";
 
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import VeeValidate from "vee-validate";
+import * as VeeValidate from "vee-validate";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+// import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
   faHome,
   faUser,
@@ -19,13 +19,15 @@ import {
 
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt);
 
-Vue.config.productionTip = false;
+// Vue.config.productionTip = false;
 
-Vue.use(VeeValidate);
-Vue.component("font-awesome-icon", FontAwesomeIcon);
+// Vue.use(VeeValidate);
+// Vue.component("font-awesome-icon", FontAwesomeIcon);
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");
+createApp(App).use(router).use(store).use(VeeValidate).mount("#app");
+
+// new Vue({
+//   router,
+//   store,
+//   render: (h) => h(App),
+// }).$mount("#app");
