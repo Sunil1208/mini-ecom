@@ -143,3 +143,138 @@ exports.createOrderV1 = async (req, res) => {
           });
     }
 };
+
+exports.getOrderById = async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+        const order = await orders.findByPk(orderId);
+        if(!order){
+            return res.status(404).send({
+                message: "Order not found",
+                status: 0,
+                data: null
+            });
+        };
+        const orderItems = await order_items.findAll({
+            attributes: ["product_id", "quantity"],
+            where: {
+                order_id: orderId
+            },
+            raw: true,
+        });
+        const productIds = orderItems.map(item => item.product_id);
+        const db_products = await products.findAll({
+            attributes: ["name", "price", "product_id", "image"],
+            where: {
+                product_id: productIds
+            },
+            raw: true,
+        });
+
+        const productMap = db_products.reduce((acc, product) => {
+            acc[product.product_id] = product;
+            return acc;
+        }, {});
+        
+        const orderItemsWithProducts = orderItems.map((orderItem) => ({
+            ...orderItem,
+            ...productMap[orderItem.product_id],
+        }));
+
+        const orderInfo = {
+            order_id: order.order_id,
+            total_amount: order.total_amount,
+            created_at: order.createdAt,
+            updated_at: order.updatedAt,
+            items: orderItemsWithProducts,
+        };
+        return res.status(200).send({
+            message: "",
+            status: 1,
+            data: orderInfo
+        });
+    } catch (error) {
+        return res.status(400).send({
+            message: error.message,
+            status: 0,
+            data: null
+        });
+    }
+};
+
+exports.getAllOrders = async (req, res) => {
+    const {userId} = req;
+  
+    try {
+      const db_orders = await orders.findAll({
+        attributes: ["order_id", "user_id", "total_amount"],
+        where: {
+          user_id: userId,
+        },
+        raw: true,
+      });
+  
+      const orderIds = db_orders.map((order) => order.order_id);
+  
+      const orderItems = await order_items.findAll({
+        attributes: ["order_id", "product_id", "quantity"],
+        where: {
+          order_id: orderIds,
+        },
+        raw: true,
+      });
+  
+      const productIds = orderItems.map((item) => item.product_id);
+  
+      const db_products = await products.findAll({
+        attributes: ["name", "price", "product_id", "image"],
+        where: {
+          product_id: productIds,
+        },
+        raw: true,
+      });
+  
+      const orderItemsMap = orderItems.reduce((acc, item) => {
+        const orderId = item.order_id;
+        if (!acc[orderId]) {
+          acc[orderId] = [];
+        }
+        acc[orderId].push(item);
+        return acc;
+      }, {});
+  
+      const ordersData = db_orders.map((order) => {
+        const orderId = order.order_id;
+        const orderItemData = orderItemsMap[orderId].map((item) => {
+          const product = db_products.find((p) => p.product_id === item.product_id);
+          return {
+            quantity: item.quantity,
+            product,
+          };
+        });
+  
+        return {
+          order_id: orderId,
+          order_items: orderItemData,
+          total_amount: order.total_amount,
+          created_at: order.createdAt,
+          updated_at: order.updatedAt
+        };
+      });
+  
+      console.log("ordersData", ordersData);
+      return res.status(200).send({
+        message: "",
+        status: 1,
+        data: ordersData,
+      });
+    } catch (error) {
+      return res.status(400).send({
+        message: error.message,
+        status: 0,
+        data: null,
+      });
+    }
+  };
+  
