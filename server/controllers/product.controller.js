@@ -21,7 +21,7 @@ exports.getProducts = (req, res) => {
 exports.getProductsInStock = (req, res) => {
     Products.findAll({
         where: {
-            inStock: {
+            in_stock: {
                 [Op.gt]: 0
             }
         }
