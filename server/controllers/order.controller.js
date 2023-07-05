@@ -74,4 +74,74 @@ exports.createOrder = async(req, res) => {
         })
     }
 
-}
+};
+
+exports.createOrderV1 = async (req, res) => {
+    const { userId } = req;
+    const { order_items: user_order_items } = req.body;
+
+    try {
+        const transaction = await sequelize.transaction();
+
+        // Get all products in a single query
+        const productIds = user_order_items.map(item => item.product_id);
+        const db_products = await products.findAll({ where: { product_id: productIds }, transaction });
+        const db_products_map = new Map(db_products.map(item => [item.product_id, item]));
+
+        // Check product quantity sufficiency
+        for (const { product_id, quantity } of user_order_items) {
+            const db_product = db_products_map.get(product_id);
+            if (!db_product || db_product.in_stock < quantity) {
+            await transaction.rollback();
+            throw new Error('Insufficient product quantity');
+            }
+        }
+
+        // Create the order
+        const order = await orders.create({ user_id: userId, total_amount: 0 }, { transaction });
+
+        // Create order items in a single query
+        const orderItems = user_order_items.map(({ product_id, quantity }) => {
+            const db_product = db_products_map.get(product_id);
+            const amount = db_product.price * quantity;
+            return {
+            order_id: order.order_id,
+            product_id,
+            quantity,
+            total_amount: amount,
+            };
+        });
+        await order_items.bulkCreate(orderItems, { transaction });
+
+        // Calculate the total amount
+        const totalAmount = orderItems.reduce((sum, item) => sum + item.total_amount, 0);
+
+        // Update the total amount in the order table
+        await order.update({ total_amount: totalAmount }, { transaction });
+
+        // Update product quantities in a single query
+        const updatePromises = user_order_items.map(({ product_id, quantity }) => {
+            const db_product = db_products_map.get(product_id);
+            return db_product.decrement('in_stock', { by: quantity, transaction });
+        });
+        await Promise.all(updatePromises);
+  
+        await transaction.commit();
+
+        return res.status(200).send({
+            message: "Order created successfully!",
+            status: 1,
+            data: {
+              ...order,
+              // items: 
+            }
+          });
+
+    } catch (error) {
+        return res.status(400).send({
+            message: error.message,
+            status: 0,
+            data: null
+          });
+    }
+};
