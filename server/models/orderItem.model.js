@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database');
+const products = require('./product.model');
+const orders = require('./order.model');
 
 const order_items = sequelize.define('order_items', {
   order_item_id: {
@@ -14,6 +16,20 @@ const order_items = sequelize.define('order_items', {
   total_amount: {
     type: DataTypes.DOUBLE,
     allowNull: false,
+  },
+  order_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: orders,
+      key: 'order_id',
+    },
+  },
+  product_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: products,
+      key: 'product_id',
+    },
   },
 });
 
