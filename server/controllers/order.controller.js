@@ -60,8 +60,7 @@ exports.createOrder = async(req, res) => {
                 message: "Order created successfully!",
                 status: 1,
                 data: {
-                    ...order,
-                    // items: 
+                    order_id: order.order_id
                 }
             });
 
@@ -132,8 +131,7 @@ exports.createOrderV1 = async (req, res) => {
             message: "Order created successfully!",
             status: 1,
             data: {
-              ...order,
-              // items: 
+                order_id: order.order_id
             }
           });
 
