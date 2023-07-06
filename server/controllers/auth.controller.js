@@ -6,7 +6,7 @@ const config = require("../config/auth.config");
 const users = require("../models/user.model");
 const { ROLES } = require("../constants/constant");
 
-exports.signup = (req, res) => {
+const signup = (req, res) => {
     const { roles } = req.body;
     if(roles.length > ROLES.length){
         return res.status(400).send({
@@ -34,7 +34,7 @@ exports.signup = (req, res) => {
     });
 };
 
-exports.signin = (req, res) => {
+const signin = (req, res) => {
     users.findOne({
         where: {
             username: req.body.username
@@ -88,4 +88,9 @@ exports.signin = (req, res) => {
             message: err.message
         });
     });
+};
+
+module.exports = {
+    signin,
+    signup,
 };

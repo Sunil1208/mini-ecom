@@ -4,7 +4,7 @@ const order_items = require("../models/orderItem.model");
 const products = require("../models/product.model");
 const users = require("../models/user.model");
 
-exports.createOrder = async(req, res) => {
+const createOrder = async(req, res) => {
     const user_id = req.userId;
     const { order_items: user_order_items } = req.body;
 
@@ -75,7 +75,7 @@ exports.createOrder = async(req, res) => {
 
 };
 
-exports.createOrderV1 = async (req, res) => {
+const createOrderV1 = async (req, res) => {
     const { userId } = req;
     const { order_items: user_order_items } = req.body;
 
@@ -144,7 +144,7 @@ exports.createOrderV1 = async (req, res) => {
     }
 };
 
-exports.getOrderById = async (req, res) => {
+const getOrderById = async (req, res) => {
     const { orderId } = req.params;
 
     try {
@@ -203,7 +203,7 @@ exports.getOrderById = async (req, res) => {
     }
 };
 
-exports.getAllOrders = async (req, res) => {
+const getAllOrders = async (req, res) => {
     const {userId} = req;
   
     try {
@@ -277,4 +277,10 @@ exports.getAllOrders = async (req, res) => {
       });
     }
   };
-  
+
+module.exports = {
+  createOrder,
+  createOrderV1,
+  getOrderById,
+  getAllOrders
+}

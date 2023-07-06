@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const Products = require("../models/product.model");
 
-exports.getProducts = (req, res) => {
+const getProducts = (req, res) => {
     Products.findAll().then(products => {
         return res.status(200).send({
             message: "",
@@ -18,7 +18,7 @@ exports.getProducts = (req, res) => {
     });
 };
 
-exports.getProductsInStock = (req, res) => {
+const getProductsInStock = (req, res) => {
     Products.findAll({
         where: {
             in_stock: {
@@ -41,7 +41,7 @@ exports.getProductsInStock = (req, res) => {
     });
 };
 
-exports.getProductById = (req, res) => {
+const getProductById = (req, res) => {
     Products.findOne({
         where: {
             product_id: req.params.productId
@@ -63,7 +63,7 @@ exports.getProductById = (req, res) => {
     });
 };
 
-exports.addProduct = (req, res) => {
+const addProduct = (req, res) => {
     const requiredFields = ["name", "description", "image", "price", "in_stock"];
     console.log("req body ", req.body)
     for (let i = 0; i < requiredFields.length; i++) {
@@ -96,3 +96,10 @@ exports.addProduct = (req, res) => {
         });
     });
 };
+
+module.exports = {
+    getProducts,
+    getProductById,
+    getProductsInStock,
+    addProduct
+}

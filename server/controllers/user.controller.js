@@ -1,6 +1,6 @@
 const users = require("../models/user.model");
 
-exports.getUserInfo = (req, res) => {
+const getUserInfo = (req, res) => {
     users.findOne({
         where: {
             user_id: req.params.user_id
@@ -36,7 +36,7 @@ exports.getUserInfo = (req, res) => {
         });
 };
 
-exports.updateUser = (req, res) => {
+const updateUser = (req, res) => {
     users.findOne({
         where: {
             user_id: req.params.user_id
@@ -74,7 +74,7 @@ exports.updateUser = (req, res) => {
     });
 };
 
-exports.updateUserRole = (req, res) => {
+const updateUserRole = (req, res) => {
     users.findOne({
         where: {
             user_id: req.params.user_id
@@ -112,18 +112,28 @@ exports.updateUserRole = (req, res) => {
     });
 };
 
-exports.allAccess = (req, res) => {
+const allAccess = (req, res) => {
     res.status(200).send("Public content")
 };
 
-exports.userBoard = (req, res) => {
+const userBoard = (req, res) => {
     res.status(200).send("User Content");
 };
 
-exports.adminBoard = (req, res) => {
+const adminBoard = (req, res) => {
     res.status(200).send("Admin Content");
 };
 
-exports.moderatorBoard = (req, res) => {
+const moderatorBoard = (req, res) => {
     res.status(200).send("Moderator Content");
 };
+
+module.exports = {
+    getUserInfo,
+    updateUser,
+    updateUserRole,
+    allAccess,
+    userBoard,
+    adminBoard,
+    moderatorBoard
+}
